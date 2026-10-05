@@ -2,6 +2,7 @@ import "./globals.css";
 import type {Metadata} from "next";
 import {Funnel_Sans} from "next/font/google";
 import {NextIntlClientProvider} from "next-intl";
+import NotificationProvider from "./components/notification/NotificationProvider";
 
 const funnelSans = Funnel_Sans({
     variable: "--font-body",
@@ -18,7 +19,9 @@ export default function RootLayout({children}: LayoutProps<"/">) {
         <html lang="en" className={funnelSans.variable}>
         <body>
         <NextIntlClientProvider>
-            {children}
+            <NotificationProvider>
+                {children}
+            </NotificationProvider>
         </NextIntlClientProvider>
         </body>
         </html>

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useNotification } from "./notification/useNotification";
-import { authClient } from "@/src/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 
 type LogoutButtonProps = {
   children?: string;

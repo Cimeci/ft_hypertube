@@ -1,7 +1,7 @@
 "use client";
 
-import LogoutButton from "@/src/app/components/LogoutButton"
-import { authClient } from "@/src/lib/auth-client";
+import LogoutButton from "@/app/components/LogoutButton"
+import { authClient } from "@/lib/auth-client";
 
 export default function Home() {
   const { data: session, isPending } = authClient.useSession();
