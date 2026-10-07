@@ -3,3 +3,8 @@ export type BencodeValue =
   | Buffer
   | BencodeValue[]
   | Map<string, BencodeValue>;
+
+export interface DecodeResult {
+  value: BencodeValue;
+  rawValues: Map<string, Buffer>;
+}
