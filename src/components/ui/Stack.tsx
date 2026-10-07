@@ -1,4 +1,4 @@
-import {CSSProperties, DetailedHTMLProps, HTMLAttributes} from "react";
+import {ComponentPropsWithoutRef, createElement, CSSProperties, ElementType} from "react";
 import {Property} from "csstype";
 import {
     Direction,
@@ -9,9 +9,21 @@ import {
     FlexValueToCSS,
     AlignmentToCSS, SpacingValueToCSS, ColorToCSS, Color
 } from "@/components/ui/utils";
+import {motion} from "motion/react";
+import {TargetAndTransition, Transition} from "motion";
 
+type StackComponent =
+    | "div"
+    | "main"
+    | "section"
+    | "article"
+    | "aside"
+    | "header"
+    | "footer"
+    | "form";
 
-export interface StackProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+export interface StackProperties {
+    component?: StackComponent
     direction?: Direction
     gap?: number | "auto"
     padding?: SpacingValue
@@ -19,16 +31,29 @@ export interface StackProps extends DetailedHTMLProps<HTMLAttributes<HTMLDivElem
     height?: Property.Height<string | number>
     width?: Property.Width<string | number>
     maxWidth?: 1200 | Property.Width<string | number>
+    maxHeight?: Property.Height<string | number>
     vAlign?: Alignment;
     hAlign?: Alignment;
     flex?: FlexValue;
     background?: Color;
     border?: "light" | "dark",
     radius?: number;
+    wrap?: boolean;
+    animatedLayout?: boolean;
+    animated?: boolean;
+    initial?: TargetAndTransition;
+    exit?: TargetAndTransition;
+    animate?: TargetAndTransition;
+    transition?: Transition;
 }
 
-export default function Stack(
+type StackProps<T extends StackComponent> =
+    StackProperties &
+    Omit<ComponentPropsWithoutRef<T>, keyof StackProperties>;
+
+export default function Stack<T extends StackComponent = "div">(
     {
+        component = "div",
         direction = "vertical",
         gap = 10,
         padding,
@@ -42,16 +67,21 @@ export default function Stack(
         radius,
         border,
         maxWidth,
+        maxHeight,
+        wrap = true,
+        animatedLayout = false,
+        animated = false,
         ...props
-    }: StackProps
+    }: StackProps<T>
 ) {
     const computedStyle: CSSProperties = {
         display: "flex",
         ...DirectionToCSS(direction),
-        flexWrap: "wrap",
+        flexWrap: wrap ? "wrap" : "nowrap",
         width,
         height,
         maxWidth,
+        maxHeight,
         borderRadius: radius ? `${radius}px` : undefined,
         ...FlexValueToCSS(flex),
         border: border ? `1px solid ${ColorToCSS(border === "light" ? "borderLight" : "borderDark")}` : undefined,
@@ -72,11 +102,12 @@ export default function Stack(
     if (padding) computedStyle.padding = SpacingValueToCSS(padding);
     if (margin) computedStyle.margin = SpacingValueToCSS(margin);
 
-    return (
-        <div
-            {...props}
-            style={computedStyle}
-        >
-        </div>
-    )
+    const Component = animatedLayout || animated ? motion[component] : (component ?? "div") as ElementType;
+    const AnimatedProps = animatedLayout ? { layout: true }:{}
+
+    return createElement(Component, {
+        ...props,
+        ...AnimatedProps,
+        style: computedStyle,
+    });
 }

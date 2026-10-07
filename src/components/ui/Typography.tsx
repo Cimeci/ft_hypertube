@@ -1,17 +1,27 @@
 import {ComponentPropsWithRef, CSSProperties} from "react";
 import {Color, ColorToCSS} from "@/components/ui/utils";
+import {motion} from "motion/react";
+import {TargetAndTransition} from "motion";
+import TransitionLink from "@/components/ui/TransitionLink";
 
 export type TypographyVariant =
     | "title"
+    | "caption"
     | "body"
 
 export interface TypographyProps extends ComponentPropsWithRef<"p"> {
+    href?: string;
     variant?: TypographyVariant;
     bold?: number | boolean;
     fontSize?: number;
     color?: Color;
     children?: string;
     uppercase?: boolean;
+    animated?: boolean;
+    key?: string;
+    initial?: TargetAndTransition,
+    animate?: TargetAndTransition,
+    exit?: TargetAndTransition,
 }
 
 interface TypographyStyleProps extends CSSProperties {
@@ -23,6 +33,11 @@ const TypographyVariants: Record<TypographyVariant, TypographyStyleProps> = {
         component: "h1",
         fontSize: "2rem",
         fontWeight: 700,
+    },
+    caption: {
+        component: "span",
+        fontSize: "1rem",
+        fontWeight: 400,
     },
     body: {
         component: "p",
@@ -43,6 +58,22 @@ export function Typography(props: TypographyProps) {
     if (props.fontSize) computedStyle.fontSize = `${props.fontSize}px`
     if (props.color) computedStyle.color = ColorToCSS(props.color);
 
-    const { component: Component, ...style } = computedStyle;
-    return <Component style={{...style, ...props.style}}>{props.children}</Component>
+    const { component, ...style } = computedStyle;
+    const Component = props.animated ? motion[component] : component;
+    const motionProps = props.animated ? {
+        initial: props.initial,
+        animate: props.animate,
+        exit: props.exit,
+    } : {}
+
+    const typography = <Component
+        style={{...style, ...props.style}}
+        {...motionProps}
+    >
+        {props.children}
+    </Component>
+
+    return props.href ? (
+        <TransitionLink href={props.href} key={props.key} style={{ color: style.color, textDecoration: "none" }}>{typography}</TransitionLink>
+    ) : typography
 }

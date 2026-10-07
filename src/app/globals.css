@@ -24,6 +24,19 @@
   --surface-dark: rgb(from var(--color-black) r g b / 60%);
   --surface-dark-secondary: rgb(from var(--color-black) r g b / 40%);
   --surface-dark-tertiary: rgb(from var(--color-black) r g b / 10%);
+  --surface-large-gradient: linear-gradient(to right,
+    var(--color-red),
+    var(--color-orange),
+    var(--color-yellow),
+    var(--color-pink),
+    var(--color-purple),
+    var(--color-red),
+    var(--color-orange),
+    var(--color-yellow),
+    var(--color-pink),
+    var(--color-purple),
+    var(--color-red)
+  );
 
   --text-light: var(--color-white);
   --text-light-secondary: rgb(from var(--color-white) r g b / 50%);
@@ -43,6 +56,15 @@
   font-size: 16px;
 }
 
+@keyframes loadingBar {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -57,4 +79,75 @@ body {
   background: var(--surface-background);
   color: var(--text-light);
   font: var(--typography-body);
+}
+
+.body_transition {
+  position: fixed;
+  inset: 0;
+  z-index: 1000000;
+  pointer-events: none;
+
+  & > span {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: scaleY(0);
+    transform-origin: bottom;
+    animation-duration: .4s;
+    animation-timing-function: cubic-bezier(.5,0,.3,1);
+    animation-fill-mode: forwards;
+  }
+
+  & > span:nth-child(1) {
+    background-color: var(--color-yellow);
+    animation-delay: .1s;
+    height: 100vh;
+  }
+
+  & > span:nth-child(2) {
+    background-color: var(--color-orange);
+    animation-delay: .15s;
+    height: 75vh;
+  }
+
+  & > span:nth-child(3) {
+    background-color: var(--color-pink);
+    animation-delay: .2s;
+    height: 50vh;
+  }
+
+  & > span:nth-child(4) {
+    background-color: var(--color-purple);
+    animation-delay: .25s;
+    height: 25vh;
+  }
+}
+
+a, a:visited, a:hover, a:active {
+  color: inherit;
+}
+
+.loadingBar {
+  position: fixed;
+  top: -3px;
+  right: 0;
+  height: 5px;
+  z-index: 1000000;
+  background: var(--surface-large-gradient);
+  background-size: 400% 400%;
+  animation: loadingBar 10s linear infinite;
+  transform-origin: left;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    height: 5px;
+    z-index: 1000000;
+    background: var(--surface-large-gradient);
+    background-size: 400% 400%;
+    animation: loadingBar 10s linear infinite;
+    filter: blur(10px);
+  }
 }

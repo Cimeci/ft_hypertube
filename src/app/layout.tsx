@@ -2,7 +2,7 @@ import "./globals.css";
 import type {Metadata} from "next";
 import {Funnel_Sans} from "next/font/google";
 import {NextIntlClientProvider} from "next-intl";
-import NotificationProvider from "./components/notification/NotificationProvider";
+import {PageTransitionProvider} from "@/components/ui/PageTransition";
 
 const funnelSans = Funnel_Sans({
     variable: "--font-body",
@@ -18,11 +18,11 @@ export default function RootLayout({children}: LayoutProps<"/">) {
     return (
         <html lang="en" className={funnelSans.variable}>
         <body>
-        <NextIntlClientProvider>
-            <NotificationProvider>
+        <PageTransitionProvider>
+            <NextIntlClientProvider>
                 {children}
-            </NotificationProvider>
-        </NextIntlClientProvider>
+            </NextIntlClientProvider>
+        </PageTransitionProvider>
         </body>
         </html>
     );

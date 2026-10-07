@@ -1,0 +1,13 @@
+.list {
+    width: 100vw;
+    height: 100dvh;
+    padding: 20px;
+    scroll-snap-type: y mandatory;
+    scroll-snap-stop: always;
+}
+
+@media (max-width: 600px) {
+    .list {
+        padding: 0;
+    }
+}

@@ -1,6 +1,4 @@
 "use client";
-
-import LogoutButton from "@/app/components/LogoutButton"
 import { authClient } from "@/lib/auth-client";
 
 export default function Home() {
@@ -22,7 +20,7 @@ export default function Home() {
         </div>
       </div>
       <div className="flex justify-center">
-        <LogoutButton className="w-1/2" toggleOnHover={{hoverDelay: 1000}} >logout</LogoutButton>
+
       </div>
     </>
   );

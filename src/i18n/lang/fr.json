@@ -1,10 +1,66 @@
 {
+  "action": {
+    "back": "Retour",
+    "enter_text": "Saisissez un texte ici",
+    "next": "Continuer",
+    "or": "ou",
+    "showless": "Afficher moins",
+    "showmore": "Afficher plus"
+  },
   "auth": {
+    "email": {
+      "nousername": {
+        "placeholder": "E-mail"
+      },
+      "placeholder": "E-mail ou nom d'utilisateur"
+    },
+    "error": {
+      "email_not_verified": "Ton adresse e-mail n'a pas été vérifiée. Vérifie ta boîte de réception et réessaye.",
+      "invalid_display_username": "Ton nom d'utilisateur est invalide",
+      "invalid_email": "Ton adresse e-mail n'est pas valide.",
+      "invalid_email_or_password": "E-mail ou mot de passe invalide",
+      "invalid_username": "Your email address or username is invalid.",
+      "unexpected_error": "Une erreur inconnu s'est produite. Réessaye plus tard.",
+      "user_already_exists_use_another_email": "Un compte est déjà lié à cette adresse. Peut-être voulais-tu te connecter ?",
+      "username_is_already_taken": "Ce nom d'utilisateur existe déjà. Et tu essayais \"{suggest}\" ?",
+      "username_is_immutable": "Tu n'es pas autorisé à changer ton nom d'utilisateur.",
+      "username_too_long": "Ton nom d'utilisateur est trop long.",
+      "username_too_short": "Ton nom d'utilisateur est trop court."
+    },
     "login": {
-      "title": "Connexion"
+      "accountexist": {
+        "action": "Déjà un compte ? Connecte-toi."
+      },
+      "action": "Connexion",
+      "description": "Retrouvez tes contenus préférés et reprenez le visionnage là où tu l’avais laissé.",
+      "noaccount": {
+        "action": "Pas de compte ? Inscris-toi ici."
+      },
+      "title": "Bon retour parmi nous !"
+    },
+    "name": {
+      "placeholder": "Ton nom"
+    },
+    "oauth": {
+      "login_with": "Se connecter avec {provider}"
+    },
+    "password": {
+      "confirm": {
+        "placeholder": "Confirmation du mot de passe"
+      },
+      "forgot": {
+        "action": "Mot de passe oublié ?"
+      },
+      "placeholder": "Mot de passe"
     },
     "register": {
-      "title": "S'inscrire"
+      "action": "S'inscrire",
+      "description": "Découvrez vos contenus préférés et profitez d’une expérience pensée pour vous.",
+      "title": {
+        "step0": "Bienvenue dans l’aventure !",
+        "step1": "Créer un mot de passe",
+        "step2": "Qu'elle est ton nom ?"
+      }
     }
   }
 }

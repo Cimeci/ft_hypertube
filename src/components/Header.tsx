@@ -22,15 +22,17 @@ export default function Header() {
                     <Button
                         variant={"borderless"}
                         href={"/auth/register"}
+                        transitionHref
                     >
-                        {t("auth.register.title")}
+                        {t("auth.register.action")}
                     </Button>
                     <Button
                         variant={"primary"}
                         left={ <Icon name={"arrow-right"} /> }
                         href={"/auth/login"}
+                        transitionHref
                     >
-                        {t("auth.login.title")}
+                        {t("auth.login.action")}
                     </Button>
                 </Stack>
             </Stack>

@@ -1,0 +1,10 @@
+.item {
+    padding: 20px;
+    scroll-snap-align: center;
+}
+
+@media (max-width: 600px) {
+    .item {
+        padding: 0;
+    }
+}
