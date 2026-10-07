@@ -5,9 +5,10 @@ import {useEffect, useRef, useState} from "react";
 import {Typography} from "@/components/ui/Typography";
 import Stack from "@/components/ui/Stack";
 import {motion, AnimatePresence} from "motion/react";
+import {Video} from "@/api/mock/video";
 
 export interface VideoItemProps {
-    videos: { index: number }[];
+    videos: Video[];
     active: number;
     muteVideo: boolean;
     toggleMute: () => void;
@@ -30,17 +31,6 @@ export function VideoItem(
 
     const [showDetails, setShowDetails] = useState(false);
 
-    const videosSources = [
-        "/video/frank00.mp4",
-        "/video/frank01.mp4",
-        "/video/frank02.mp4",
-        "/video/frank03.mp4",
-        "/video/frank04.mp4",
-        "/video/frank05.mp4",
-        "/video/frank06.mp4",
-    ]
-    const videoSrc = videosSources[index % videosSources.length];
-
     const toggleDetails = () => setShowDetails(!showDetails);
 
     useEffect(() => {
@@ -51,6 +41,8 @@ export function VideoItem(
             videoPlayerRef.current.stop();
         }
     }, [active]);
+
+    console.log(video.details.title)
 
     return (
         <div
@@ -63,7 +55,8 @@ export function VideoItem(
         >
             <VideoPlayer
                 ref={videoPlayerRef}
-                src={videoSrc}
+                src={video.src}
+                ratio={video.ratio}
                 onToggleDetails={toggleDetails}
                 mini={showDetails}
                 muted={muteVideo}
@@ -83,7 +76,7 @@ export function VideoItem(
                             delay: .2,
                         }}
                     >
-                        <Typography>Details here</Typography>
+                        <Typography>{video.details.title}</Typography>
                         <Stack height={1000} background={"red"} width={5}></Stack>
                     </motion.div>
                 )}

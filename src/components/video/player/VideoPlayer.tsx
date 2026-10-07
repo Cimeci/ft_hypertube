@@ -1,11 +1,13 @@
 import styles from "./VideoPlayer.module.css";
-import {forwardRef, useEffect, useImperativeHandle, useRef} from "react";
+import {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
 import {motion, useMotionValue, useTransform} from "framer-motion";
 import {animate, MotionStyle} from "motion";
 import { useMediaQuery } from 'usehooks-ts'
+import MuteButton from "@/components/MuteButton";
 
 export interface VideoPlayerProps {
     src?: string;
+    ratio?: number;
     onToggleDetails?: () => void;
     mini: boolean;
     muted: boolean;
@@ -26,8 +28,10 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>((props, 
     const videoProgress = useMotionValue(0);
     const detailsScaling = useMotionValue(0);
 
-    const windowWidth = useRef(0);
-    const windowHeight = useRef(0);
+    const [windowWidth, setWindowWidth] = useState(0);
+    const [windowHeight, setWindowHeight] = useState(0);
+
+    const speedUpTimeout = useRef<NodeJS.Timeout | null>(null);
 
     const play = () => {
         if (!videoRef.current) return;
@@ -58,23 +62,68 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>((props, 
     }
 
     const handleResize = () => {
-        windowWidth.current = window.innerWidth;
-        windowHeight.current = window.innerHeight;
+        setWindowWidth(window.innerWidth);
+        setWindowHeight(window.innerHeight);
     }
+
+    const getRelativeTouchPosition = (e: TouchEvent): number => {
+        if (!videoRef.current) return -1;
+
+        const touch = e.touches[0];
+        const rect = videoRef.current.getBoundingClientRect();
+        return ((touch.clientX - rect.x) / rect.width);
+    }
+
+    const handleVideoTouchStart = useCallback((e: TouchEvent) => {
+        if (!videoRef.current) return;
+
+        const posY = getRelativeTouchPosition(e);
+
+        if (speedUpTimeout.current) clearTimeout(speedUpTimeout.current);
+
+        speedUpTimeout.current = setTimeout(() => {
+            if (posY < 0.8) return;
+            speedUpTimeout.current = null;
+            if (!videoRef.current) return;
+            videoRef.current.playbackRate = 2.0;
+        }, 500);
+    }, []);
+
+    const handleVideoTouchEnd = useCallback((e: TouchEvent) => {
+        if (!videoRef.current) return;
+        e.preventDefault();
+
+        if (speedUpTimeout.current) {
+            clearTimeout(speedUpTimeout.current);
+            speedUpTimeout.current = null;
+            videoRef.current.paused ? videoRef.current.play() : videoRef.current.pause();
+        } else {
+            videoRef.current.playbackRate = 1.0;
+        }
+    }, []);
+
 
     useImperativeHandle(ref, () => ({
         play,
         stop,
-    }), []);
+    }), [play, stop]);
 
     useEffect(() => {
+        if (!videoRef.current) return;
         handleResize();
         document.addEventListener("resize", handleResize);
+        videoRef.current.addEventListener("touchstart", handleVideoTouchStart, { passive: false });
+        videoRef.current.addEventListener("touchend", handleVideoTouchEnd, { passive: false });
+
         return () => {
             document.removeEventListener("resize", handleResize);
+            if (videoRef.current) {
+                videoRef.current.removeEventListener("touchstart", handleVideoTouchStart);
+                videoRef.current.removeEventListener("touchend", handleVideoTouchEnd);
+            }
             unwatchVideoProgress();
         }
-    }, []);
+    }, [handleVideoTouchEnd, handleVideoTouchStart, unwatchVideoProgress]);
 
     useEffect(() => {
         animate(
@@ -92,12 +141,12 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>((props, 
         width: useTransform(
             detailsScaling,
             [0, 1],
-            [windowWidth.current, 113]
+            [windowWidth, 113]
         ),
         height: useTransform(
             detailsScaling,
             [0, 1],
-            [windowHeight.current, 200]
+            [windowHeight, 200]
         ),
         borderRadius: useTransform(
             detailsScaling,
@@ -108,6 +157,20 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>((props, 
             detailsScaling,
             [0, 1],
             [0, 20]
+        ),
+    }
+
+    const topActionsAnimatedStyle: MotionStyle = {
+        width: windowWidth,
+        opacity: useTransform(
+            detailsScaling,
+            [0, 1],
+            [1, 0]
+        ),
+        y: useTransform(
+            detailsScaling,
+            [0, 1],
+            [0, -80]
         ),
     }
 
@@ -137,9 +200,23 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>((props, 
                 src={props.src}
                 loop
                 muted={props.muted}
+                playsInline
+                style={{
+                    objectFit: (props.ratio ?? 0) >= 1 ? 'contain' : undefined,
+                }}
             />
-            <button onClick={props.onToggleDetails}>Toggle comment</button>
-            <button onClick={props.toggleMute}>Toggle mute</button>
+            <motion.div
+                className={styles.topAction}
+                style={topActionsAnimatedStyle}
+            >
+                <MuteButton isMuted={props.muted} onClick={props.toggleMute} />
+                <button>Subtitle</button>
+                <button>Fullscreen</button>
+            </motion.div>
+            <button onClick={props.onToggleDetails}>
+                Toggle comment
+            </button>
+
             <motion.span style={{ scaleX: videoProgress }}/>
         </motion.div>
     )

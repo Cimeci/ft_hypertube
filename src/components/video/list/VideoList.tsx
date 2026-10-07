@@ -3,43 +3,26 @@ import styles from "./VideoList.module.css";
 import {useEffect, useState, UIEvent, useCallback} from "react";
 import {List} from "react-window";
 import {VideoItem} from "@/components/video/item/VideoItem";
+import {getVideoFeed, Video} from "@/api/mock/video";
 
 const VERTICAL_MARGIN = 80;
 const MOBILE_QUERY_MAX_WIDTH = 650;
 
 export interface VideoListProps {
-    videoId?: string;
+    videos: Video[],
 }
 
 export default function VideoList(props: VideoListProps) {
     const [rowHeight, setRowHeight] = useState<number | null>(null);
-    const [videos, setVideos] = useState<{ index: number }[]>([]);
+
+    const [videos, setVideos] = useState<Video[]>(props.videos);
     const [active, setActive] = useState(0);
-    const [page, setPage] = useState(1);
 
     const [muteVideo, setMuteVideo] = useState(true);
 
     const updateUrl = (videoId: string) => {
         window.history.pushState({}, "", `/explore/${videoId}`);
     }
-
-    const fetchVideos = useCallback(() => {
-        setTimeout(() => {
-            if (page === 1 && props.videoId && !isNaN(Number(props.videoId))) {
-                const index = Number(props.videoId);
-                setVideos([
-                    ...Array.from({ length: 5 }, (_, i) => ({ index: index + i }))
-                ]);
-
-            } else {
-                setVideos((prev) => [
-                    ...prev,
-                    ...Array.from({length: 5}, (_, i) => ({index: (prev.length > 0 ? prev[prev.length - 1].index : 0) + i}))
-                ]);
-            }
-            setPage((prev) => prev + 1);
-        }, 500)
-    }, [page, props.videoId]);
 
     const handleScroll = (e: UIEvent<HTMLDivElement>) => {
         const scrollTop = e.currentTarget.scrollTop;
@@ -59,18 +42,25 @@ export default function VideoList(props: VideoListProps) {
         setMuteVideo((prev) => !prev);
     }, [])
 
-    const handleVideoChange = useCallback((video: { index: number }) => {
-        updateUrl(video.index.toString())
-        if (active + 2 >= videos.length) fetchVideos();
-    }, [active, fetchVideos, videos.length]);
+    const handleVideoChange = useCallback((video: Video) => {
+        updateUrl(video.id)
+        if (active + 2 >= videos.length) {
+            getVideoFeed().then((videos) => {
+                setVideos((prev) => [
+                    ...prev,
+                    ...videos,
+                ]);
+            })
+        }
+    }, [active, videos.length]);
 
     useEffect(() => {
-        fetchVideos();
-
         (() => handleResize())();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
-    }, []);
+    }, [handleResize]);
+
+    console.log(videos)
 
     if (!rowHeight) return null;
     return (
