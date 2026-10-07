@@ -1,15 +1,12 @@
-import {notFound} from 'next/navigation'
-import Stack from "@/components/ui/Stack";
-import VideoList from "@/components/video/list/VideoList";
+import {Suspense} from "react";
+import Feed from "@/components/Feed";
 
-export default async function Explore({ params }: { params: { video_id: string[] }}) {
-    const { video_id } = await params;
-    if (video_id?.length > 1) return notFound();
-    const videoId: string | undefined = video_id?.[0];
-
+export default async function Explore({ params }: { params: Promise<{ video_id: string[] }>}) {
     return (
-        <Stack>
-            <VideoList videoId={videoId} />
-        </Stack>
+        <>
+            <Suspense fallback={<p>Loading...</p>}>
+                <Feed params={params}/>
+            </Suspense>
+        </>
     )
 }
