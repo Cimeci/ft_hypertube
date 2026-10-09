@@ -1,15 +1,15 @@
 import styles from "./VideoPlayer.module.css";
-import {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
+import {forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
 import {motion, useMotionValue, useTransform} from "framer-motion";
 import {animate, MotionStyle} from "motion";
 import { useMediaQuery } from 'usehooks-ts'
 import MuteButton from "@/components/MuteButton";
+import {Media} from "@/types/Media";
 
 export interface VideoPlayerProps {
-    src?: string;
-    ratio?: number;
-    onToggleDetails?: () => void;
+    medias: Media[];
     mini: boolean;
+    bottom?: ReactNode;
     muted: boolean;
     toggleMute: () => void;
 }
@@ -174,6 +174,20 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>((props, 
         ),
     }
 
+    const bottomActionsAnimatedStyle: MotionStyle = {
+        width: windowWidth,
+        opacity: useTransform(
+            detailsScaling,
+            [0, 1],
+            [1, 0]
+        ),
+        y: useTransform(
+            detailsScaling,
+            [0, 1],
+            [0, 80]
+        ),
+    }
+
     useEffect(() => {
         if (!isMobile && videoPlayerRef.current) {
             videoPlayerRef.current.style.removeProperty('width')
@@ -197,14 +211,21 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>((props, 
         >
             <video
                 ref={videoRef}
-                src={props.src}
                 loop
                 muted={props.muted}
                 playsInline
                 style={{
-                    objectFit: (props.ratio ?? 0) >= 1 ? 'contain' : undefined,
+                    objectFit: (props.medias[0].ratio ?? 0) >= 1 ? 'contain' : undefined,
                 }}
-            />
+            >
+                {props.medias.map((media, index) => (
+                    <source
+                        key={index}
+                        src={media.src}
+                        type={media.type}
+                    />
+                ))}
+            </video>
             <motion.div
                 className={styles.topAction}
                 style={topActionsAnimatedStyle}
@@ -213,9 +234,17 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>((props, 
                 <button>Subtitle</button>
                 <button>Fullscreen</button>
             </motion.div>
-            <button onClick={props.onToggleDetails}>
-                Toggle comment
-            </button>
+
+
+            {props.bottom && (
+                <motion.div
+                    className={styles.bottomAction}
+                    style={bottomActionsAnimatedStyle}
+                >
+                    {props.bottom}
+                </motion.div>
+            )}
+
 
             <motion.span style={{ scaleX: videoProgress }}/>
         </motion.div>

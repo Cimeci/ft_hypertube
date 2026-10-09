@@ -62,5 +62,10 @@
         "step2": "What's your name ?"
       }
     }
+  },
+  "video": {
+    "details": {
+      "view": "{views} view(s)"
+    }
   }
 }

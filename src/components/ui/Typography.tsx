@@ -6,8 +6,10 @@ import TransitionLink from "@/components/ui/TransitionLink";
 
 export type TypographyVariant =
     | "title"
+    | "title2"
     | "caption"
     | "body"
+    | "footer"
 
 export interface TypographyProps extends ComponentPropsWithRef<"p"> {
     href?: string;
@@ -18,6 +20,7 @@ export interface TypographyProps extends ComponentPropsWithRef<"p"> {
     children?: string;
     uppercase?: boolean;
     animated?: boolean;
+    lineLimit?: number;
     key?: string;
     initial?: TargetAndTransition,
     animate?: TargetAndTransition,
@@ -34,6 +37,11 @@ const TypographyVariants: Record<TypographyVariant, TypographyStyleProps> = {
         fontSize: "2rem",
         fontWeight: 700,
     },
+    title2: {
+        component: "h2",
+        fontSize: "1.3rem",
+        fontWeight: 500,
+    },
     caption: {
         component: "span",
         fontSize: "1rem",
@@ -43,7 +51,12 @@ const TypographyVariants: Record<TypographyVariant, TypographyStyleProps> = {
         component: "p",
         fontSize: "1rem",
         fontWeight: 400,
-    }
+    },
+    footer: {
+        component: "span",
+        fontSize: "0.8rem",
+        fontWeight: 400,
+    },
 }
 
 export function Typography(props: TypographyProps) {
@@ -57,6 +70,13 @@ export function Typography(props: TypographyProps) {
     if (props.bold) computedStyle.fontWeight = typeof props.bold === "number" ? props.bold : 600
     if (props.fontSize) computedStyle.fontSize = `${props.fontSize}px`
     if (props.color) computedStyle.color = ColorToCSS(props.color);
+    if (props.lineLimit) {
+        computedStyle.overflow = "hidden";
+        computedStyle.display = "-webkit-box";
+        computedStyle.WebkitLineClamp = props.lineLimit;
+        computedStyle.WebkitBoxOrient = "vertical";
+        computedStyle.lineClamp = props.lineLimit;
+    }
 
     const { component, ...style } = computedStyle;
     const Component = props.animated ? motion[component] : component;

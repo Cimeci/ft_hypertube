@@ -3,7 +3,8 @@ import styles from "./VideoList.module.css";
 import {useEffect, useState, UIEvent, useCallback} from "react";
 import {List} from "react-window";
 import {VideoItem} from "@/components/video/item/VideoItem";
-import {getVideoFeed, Video} from "@/api/mock/video";
+import {getVideoFeed} from "@/api/mock/video";
+import {Video} from "@/types/Video";
 
 const VERTICAL_MARGIN = 80;
 const MOBILE_QUERY_MAX_WIDTH = 650;

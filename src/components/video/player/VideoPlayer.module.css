@@ -35,6 +35,13 @@
         background: var(--surface-gradient-background-bottom);
     }
 
+    & > .bottomAction {
+        position: absolute;
+        bottom: 0;
+        padding: 20px;
+        background: var(--surface-gradient-background-top);
+    }
+
     & > span {
         position: absolute;
         bottom: 0;

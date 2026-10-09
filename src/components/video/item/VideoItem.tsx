@@ -2,10 +2,11 @@ import styles from "./VideoItem.module.css";
 import {RowComponentProps} from "react-window";
 import VideoPlayer, {VideoPlayerRef} from "@/components/video/player/VideoPlayer";
 import {useEffect, useRef, useState} from "react";
-import {Typography} from "@/components/ui/Typography";
 import Stack from "@/components/ui/Stack";
 import {motion, AnimatePresence} from "motion/react";
-import {Video} from "@/api/mock/video";
+import {Video} from "@/types/Video";
+import VideoDetails from "@/components/video/details/VideoDetails";
+import {SwitchActionButton} from "@/components/SwitchActionButton";
 
 export interface VideoItemProps {
     videos: Video[];
@@ -31,7 +32,15 @@ export function VideoItem(
 
     const [showDetails, setShowDetails] = useState(false);
 
-    const toggleDetails = () => setShowDetails(!showDetails);
+    const DetailsActions = (
+        <>
+            <SwitchActionButton
+                active={showDetails}
+                onChange={setShowDetails}
+                icon={"chat-line"}
+            />
+        </>
+    )
 
     useEffect(() => {
         if (!videoPlayerRef.current) return;
@@ -41,8 +50,6 @@ export function VideoItem(
             videoPlayerRef.current.stop();
         }
     }, [active]);
-
-    console.log(video.details.title)
 
     return (
         <div
@@ -55,12 +62,16 @@ export function VideoItem(
         >
             <VideoPlayer
                 ref={videoPlayerRef}
-                src={video.src}
-                ratio={video.ratio}
-                onToggleDetails={toggleDetails}
+                medias={video.medias}
                 mini={showDetails}
                 muted={muteVideo}
                 toggleMute={toggleMute}
+                bottom={
+                    <VideoDetails
+                        video={video}
+                        actions={DetailsActions}
+                    />
+                }
             />
             <AnimatePresence>
                 {showDetails && (
@@ -76,7 +87,10 @@ export function VideoItem(
                             delay: .2,
                         }}
                     >
-                        <Typography>{video.details.title}</Typography>
+                        <VideoDetails
+                            video={video}
+                            actions={DetailsActions}
+                        />
                         <Stack height={1000} background={"red"} width={5}></Stack>
                     </motion.div>
                 )}
