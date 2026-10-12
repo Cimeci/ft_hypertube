@@ -1,7 +1,7 @@
 import type { Handshake } from "./types.ts";
 
+export const HANDSHAKE_LENGTH = 68
 const PROTOCOL = "BitTorrent protocol"
-const HANDSHAKE_LENGTH = 68
 const RESERVED_LENGTH = 8
 const INFO_HASH_OFFSET = 1 + PROTOCOL.length + RESERVED_LENGTH
 const INFO_HASH_LENGTH = 20
