@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 
 const SHA1_LENGTH = 20;
 
-function getNumber(dict: Map<string, BencodeValue>, key: string): number {
+export function getNumber(dict: Map<string, BencodeValue>, key: string): number {
     const value = dict.get(key);
     if (typeof value !== "number")
         throw new Error(`torrent: '${key}' must be a number`)
@@ -19,7 +19,7 @@ function getString(dict: Map<string, BencodeValue>, key: string): string {
     return value.toString()
 }
 
-function getBuffer(dict: Map<string, BencodeValue>, key: string): Buffer {
+export function getBuffer(dict: Map<string, BencodeValue>, key: string): Buffer {
     const value = dict.get(key);
     if (!Buffer.isBuffer(value))
         throw new Error(`torrent: '${key}' must be a buffer`)
