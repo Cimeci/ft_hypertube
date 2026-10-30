@@ -29,7 +29,7 @@ export default function OAuthButtons({ providers }: OAuthButtonsProps) {
         setError(undefined);
         const { error } = await authClient.signIn.social({
             provider: providerId,
-            callbackURL: "/home"
+            callbackURL: "/explore"
         });
         setTimeout(() => {
             if (error) setError((error.code ?? "UNEXPECTED_ERROR").toLowerCase())

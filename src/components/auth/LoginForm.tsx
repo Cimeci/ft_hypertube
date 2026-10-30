@@ -24,7 +24,7 @@ export default function LoginForm() {
             const {error} = await authClient.signIn.email({
                 email,
                 password,
-                callbackURL: "/home"
+                callbackURL: "/explore"
             })
             if (error) setError((error.code ?? "UNEXPECTED_ERROR").toLowerCase())
             setLoading(false);
