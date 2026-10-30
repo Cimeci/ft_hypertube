@@ -25,6 +25,7 @@ export interface TypographyProps extends ComponentPropsWithRef<"p"> {
     initial?: TargetAndTransition,
     animate?: TargetAndTransition,
     exit?: TargetAndTransition,
+    skeleton?: boolean;
 }
 
 interface TypographyStyleProps extends CSSProperties {
@@ -76,6 +77,39 @@ export function Typography(props: TypographyProps) {
         computedStyle.WebkitLineClamp = props.lineLimit;
         computedStyle.WebkitBoxOrient = "vertical";
         computedStyle.lineClamp = props.lineLimit;
+    }
+
+    if (props.skeleton) {
+        let fontSize = computedStyle.fontSize?.toString() ?? "1rem"
+        const size = parseFloat(fontSize);
+        const spaceWidth = fontSize.endsWith("em") ? size * 3 : size * 0.2;
+        return <div style={{
+            display: "flex",
+            gap: spaceWidth,
+            flexWrap: "wrap",
+            height: "100%",
+            color: "transparent",
+            userSelect: "none",
+        }}>
+            {props.children?.split(" ").map((text, index) => (
+                <div
+                    key={index}
+                    style={{
+                        ...computedStyle,
+                        ...props.style,
+                        height: "100%",
+                        minWidth: 20,
+                        borderRadius: spaceWidth,
+                        background: "linear-gradient(90deg, #FFFFFF20 25%, #FFFFFF40 50%, #FFFFFF20 75%)",
+                        backgroundSize: "800px 100%",
+                        animation: "shimmer 5s linear infinite",
+                        animationDelay: `${(index % 5) * 0.4}s`,
+                    }}
+                >
+                    {text}
+                </div>
+            ))}
+        </div>
     }
 
     const { component, ...style } = computedStyle;
