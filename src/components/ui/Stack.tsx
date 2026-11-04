@@ -45,6 +45,7 @@ export interface StackProperties {
     exit?: TargetAndTransition;
     animate?: TargetAndTransition;
     transition?: Transition;
+    skeleton?: boolean;
 }
 
 type StackProps<T extends StackComponent> =
@@ -71,6 +72,7 @@ export default function Stack<T extends StackComponent = "div">(
         wrap = true,
         animatedLayout = false,
         animated = false,
+        skeleton = false,
         ...props
     }: StackProps<T>
 ) {
@@ -101,6 +103,12 @@ export default function Stack<T extends StackComponent = "div">(
 
     if (padding) computedStyle.padding = SpacingValueToCSS(padding);
     if (margin) computedStyle.margin = SpacingValueToCSS(margin);
+
+    if (skeleton) {
+        computedStyle.background = "linear-gradient(90deg, #FFFFFF20 25%, #FFFFFF40 50%, #FFFFFF20 75%)";
+        computedStyle.backgroundSize = "800px 100%";
+        computedStyle.animation = "shimmer 5s linear infinite";
+    }
 
     const Component = animatedLayout || animated ? motion[component] : (component ?? "div") as ElementType;
     const AnimatedProps = animatedLayout ? { layout: true }:{}
