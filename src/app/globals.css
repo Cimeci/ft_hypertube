@@ -41,9 +41,13 @@
   --text-light: var(--color-white);
   --text-light-secondary: rgb(from var(--color-white) r g b / 50%);
   --text-light-secondary-highlighted: rgb(from var(--color-white) r g b / 70%);
+  --text-light-tertiary: rgb(from var(--color-white) r g b / 30%);
+  --text-light-tertiary-highlighted: rgb(from var(--color-white) r g b / 50%);
   --text-dark: var(--color-black);
   --text-dark-secondary: rgb(from var(--color-black) r g b / 50%);
   --text-dark-secondary-highlighted: rgb(from var(--color-black) r g b / 70%);
+  --text-dark-tertiary: rgb(from var(--color-black) r g b / 30%);
+  --text-dark-tertiary-highlighted: rgb(from var(--color-black) r g b / 50%);
 
   --border-light: rgb(from var(--color-white) r g b / 10%);
   --border-dark: rgb(from var(--color-black) r g b / 10%);
