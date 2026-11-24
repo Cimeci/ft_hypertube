@@ -56,6 +56,7 @@ try {
             completed++;
             console.log(`pièce ${index} ok (${completed}/${total}, ${((completed / total) * 100).toFixed(1)} %)`);
         },
+        onPeerError: (peer, error) => console.warn(`peer ${peer.ip}:${peer.port} abandonné : ${error.message}`),
     });
 
     const elapsedMs: number = Date.now() - started;
