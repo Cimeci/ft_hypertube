@@ -15,6 +15,7 @@ export interface DownloadOptions {
     pieceTimeoutMs?: number;
     onPiece?: (index: number) => void;
     pieces?: number[];
+    onPeerError?: (peer: Peer, error: Error) => void;
 }
 
 export async function downloadTorrent(
@@ -47,7 +48,8 @@ export async function downloadTorrent(
                 await writePiece(dir, torrent, index, data);
                 done++;
                 options.onPiece?.(index);
-            } catch {
+            } catch (err) {
+                options.onPeerError?.(session.peer, err as Error);
                 queue.push(index);
                 queue.sort((a, b) => a - b);
                 break;
@@ -62,7 +64,8 @@ export async function downloadTorrent(
             let session: PeerSession;
             try {
                 session = await openSession(peer, torrent, options.peerId, options.sessionTimeoutMs);
-            } catch {
+            } catch (err) {
+                options.onPeerError?.(peer, err as Error);
                 continue;
             }
             await work(session);

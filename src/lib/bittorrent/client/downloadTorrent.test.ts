@@ -232,3 +232,56 @@ describe("downloadTorrent / option pieces (seulement certaines pièces)", () => 
     assert.equal(good.connections, 0);
   });
 });
+
+describe("downloadTorrent / onPeerError (savoir pourquoi un peer échoue)", () => {
+  it("peer injoignable : onPeerError reçoit ce peer et une erreur de connexion", LIMIT, async () => {
+    const dead = await deadPeer();
+    const good = await fake(ALL);
+    const errors: { peer: string; message: string }[] = [];
+    await downloadTorrent(MOVIE, [dead, good.peer], dir, options({
+      maxPeers: 1,
+      onPeerError: (peer, error) => errors.push({ peer: `${peer.ip}:${peer.port}`, message: error.message }),
+    }));
+    assert.equal(errors.length, 1);
+    assert.equal(errors[0].peer, `${dead.ip}:${dead.port}`);
+    assert.match(errors[0].message, /ECONNREFUSED/);
+  });
+
+  it("peer qui envoie des blocs faux : onPeerError reçoit l'erreur de hash", LIMIT, async () => {
+    const corrupt = await fake(ALL, "corrupt");
+    const good = await fake(ALL);
+    const messages: string[] = [];
+    await downloadTorrent(MOVIE, [corrupt.peer, good.peer], dir, options({
+      maxPeers: 1,
+      onPeerError: (_peer, error) => messages.push(error.message),
+    }));
+    assert.equal(messages.length, 1);
+    assert.match(messages[0], /failed hash check/);
+  });
+
+  it("peer qui n'envoie pas de bitfield : onPeerError reçoit l'erreur", LIMIT, async () => {
+    const empty = await fake([]);
+    const good = await fake(ALL);
+    const messages: string[] = [];
+    await downloadTorrent(MOVIE, [empty.peer, good.peer], dir, options({
+      maxPeers: 1,
+      onPeerError: (_peer, error) => messages.push(error.message),
+    }));
+    assert.match(messages[0], /no bitfield received/);
+  });
+
+  it("tout se passe bien : onPeerError n'est jamais appelé", LIMIT, async () => {
+    const good = await fake(ALL);
+    let calls: number = 0;
+    await downloadTorrent(MOVIE, [good.peer], dir, options({ onPeerError: () => calls++ }));
+    assert.equal(calls, 0);
+  });
+
+  it("un peer qui n'a simplement plus de pièce utile n'est pas une erreur", LIMIT, async () => {
+    const half = await fake([0, 1]);
+    const good = await fake(ALL);
+    let calls: number = 0;
+    await downloadTorrent(MOVIE, [half.peer, good.peer], dir, options({ maxPeers: 1, onPeerError: () => calls++ }));
+    assert.equal(calls, 0);
+  });
+});
