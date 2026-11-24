@@ -3,7 +3,8 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { parseTorrent } from "../torrent/parser.ts";
-import { pieceBlocks, pieceSize, verifyPiece } from "./piece.ts";
+import type { Torrent } from "../torrent/types.ts";
+import { pieceBlocks, pieceSize, piecesForFile, verifyPiece } from "./piece.ts";
 
 const fixture = (name: string) =>
   parseTorrent(readFileSync(new URL(`../__fixtures__/${name}`, import.meta.url)));
@@ -94,5 +95,71 @@ describe("piece / verifyPiece", () => {
 
   it("rejette les bonnes données sous le mauvais numéro de pièce", () => {
     assert.equal(verifyPiece(HELLO, 1, Buffer.from("Hello BitTorrent")), false);
+  });
+});
+
+// Le torrent à plusieurs fichiers de writePiece.test.ts, pièces de 16 :
+//
+//   octets    0 ........ 10 ................... 30 ...... 36
+//   fichiers  | a.txt (10) | sub/b.txt (20)      | c.txt (6) |
+//   pièces    | pièce 0 (16)     | pièce 1 (16)      | p2 (4) |
+const MULTI: Torrent = {
+  trackers: [],
+  name: "multi",
+  pieceLength: 16,
+  pieces: [Buffer.alloc(20), Buffer.alloc(20), Buffer.alloc(20)],
+  files: [
+    { path: "multi/a.txt", length: 10, offset: 0 },
+    { path: "multi/sub/b.txt", length: 20, offset: 10 },
+    { path: "multi/c.txt", length: 6, offset: 30 },
+  ],
+  totalLength: 36,
+  infoHash: Buffer.alloc(20),
+};
+
+describe("piece / piecesForFile", () => {
+  it("hello (un seul fichier) : toutes les pièces", () => {
+    assert.deepEqual(piecesForFile(HELLO, 0), [0, 1]);
+  });
+
+  it("a.txt, entièrement dans la pièce 0 : [0]", () => {
+    assert.deepEqual(piecesForFile(MULTI, 0), [0]);
+  });
+
+  it("b.txt, à cheval sur les pièces 0 et 1 : [0, 1]", () => {
+    assert.deepEqual(piecesForFile(MULTI, 1), [0, 1]);
+  });
+
+  it("c.txt, le dernier fichier, finit avec la dernière pièce : [1, 2]", () => {
+    assert.deepEqual(piecesForFile(MULTI, 2), [1, 2]);
+  });
+
+  it("un fichier qui finit pile à la fin d'une pièce ne déborde pas sur la suivante", () => {
+    const exact: Torrent = { ...MULTI, files: [{ path: "x", length: 16, offset: 0 }, { path: "y", length: 20, offset: 16 }] };
+    assert.deepEqual(piecesForFile(exact, 0), [0]);
+    assert.deepEqual(piecesForFile(exact, 1), [1, 2]);
+  });
+
+  it("un fichier vide : aucune pièce", () => {
+    const withEmpty: Torrent = { ...MULTI, files: [{ path: "empty", length: 0, offset: 0 }, ...MULTI.files] };
+    assert.deepEqual(piecesForFile(withEmpty, 0), []);
+  });
+
+  it("Big Buck Bunny, le .mp4 : les pièces 634 à 752 (119 pièces, ~62 Mo au lieu de 441)", () => {
+    const mp4 = BUNNY.files.findIndex((file) => file.path.endsWith(".mp4"));
+    const pieces = piecesForFile(BUNNY, mp4);
+    assert.equal(pieces.length, 119);
+    assert.equal(pieces[0], 634);
+    assert.equal(pieces[pieces.length - 1], 752);
+  });
+
+  it("les pièces sont dans l'ordre et sans trou", () => {
+    const pieces = piecesForFile(BUNNY, BUNNY.files.findIndex((file) => file.path.endsWith(".avi")));
+    pieces.forEach((index, i) => assert.equal(index, pieces[0] + i));
+  });
+
+  it("index de fichier hors du torrent : rejette", () => {
+    assert.throws(() => piecesForFile(MULTI, 3), /file 3 does not exist/);
+    assert.throws(() => piecesForFile(MULTI, -1), /file -1 does not exist/);
   });
 });
