@@ -183,3 +183,52 @@ describe("downloadTorrent / les échecs", () => {
     assert.deepEqual((await movieOnDisk()).subarray(0, 64), MOVIE_DATA.subarray(0, 64));
   });
 });
+
+describe("downloadTorrent / option pieces (seulement certaines pièces)", () => {
+  it("pieces: [1, 2] → ne demande que ces deux pièces, et elles sont bien sur le disque", LIMIT, async () => {
+    const good = await fake(ALL);
+    await downloadTorrent(MOVIE, [good.peer], dir, options({ pieces: [1, 2] }));
+    assert.deepEqual(good.requestedPieces, [1, 2]);
+    assert.deepEqual((await movieOnDisk()).subarray(16, 48), MOVIE_DATA.subarray(16, 48));
+  });
+
+  it("pièces données dans le désordre : téléchargées quand même dans l'ordre", LIMIT, async () => {
+    const good = await fake(ALL);
+    await downloadTorrent(MOVIE, [good.peer], dir, options({ pieces: [3, 1] }));
+    assert.deepEqual(good.requestedPieces, [1, 3]);
+  });
+
+  it("une pièce en double : téléchargée une seule fois", LIMIT, async () => {
+    const good = await fake(ALL);
+    await downloadTorrent(MOVIE, [good.peer], dir, options({ pieces: [1, 1] }));
+    assert.deepEqual(good.requestedPieces, [1]);
+  });
+
+  it("ne modifie pas le tableau pieces qu'on lui donne", LIMIT, async () => {
+    const good = await fake(ALL);
+    const wanted: number[] = [3, 1];
+    await downloadTorrent(MOVIE, [good.peer], dir, options({ pieces: wanted }));
+    assert.deepEqual(wanted, [3, 1]);
+  });
+
+  it("pieces: [] → rien à faire : se termine sans se connecter à personne", LIMIT, async () => {
+    const good = await fake(ALL);
+    await downloadTorrent(MOVIE, [good.peer], dir, options({ pieces: [] }));
+    assert.equal(good.connections, 0);
+  });
+
+  it("le bilan ne compte que les pièces demandées : 1 of 2 pieces missing", LIMIT, async () => {
+    const partial = await fake([0, 1, 2, 3]);
+    await assert.rejects(
+      downloadTorrent(MOVIE, [partial.peer], dir, options({ pieces: [3, 4] })),
+      /download incomplete: 1 of 2 pieces missing/,
+    );
+  });
+
+  it("une pièce qui n'existe pas dans le torrent : rejette sans se connecter", LIMIT, async () => {
+    const good = await fake(ALL);
+    await assert.rejects(downloadTorrent(MOVIE, [good.peer], dir, options({ pieces: [1, 5] })), /piece 5 does not exist/);
+    await assert.rejects(downloadTorrent(MOVIE, [good.peer], dir, options({ pieces: [-1] })), /piece -1 does not exist/);
+    assert.equal(good.connections, 0);
+  });
+});

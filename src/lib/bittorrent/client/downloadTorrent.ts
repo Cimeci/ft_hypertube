@@ -14,6 +14,7 @@ export interface DownloadOptions {
     sessionTimeoutMs?: number;
     pieceTimeoutMs?: number;
     onPiece?: (index: number) => void;
+    pieces?: number[];
 }
 
 export async function downloadTorrent(
@@ -22,7 +23,15 @@ export async function downloadTorrent(
     dir: string,
     options: DownloadOptions,
 ): Promise<void> {
-    const queue: number[] = torrent.pieces.map((_, i) => i);
+    const wanted: number[] = options.pieces ?? torrent.pieces.map((_, i) => i);
+
+    for (const index of wanted) {
+        if (!Number.isInteger(index) || index < 0 || index >= torrent.pieces.length)
+            throw new Error(`piece ${index} does not exist`);
+    }
+
+    const queue: number[] = [...new Set(wanted)].sort((a, b) => a - b);
+    const total: number = queue.length;
     const peerQueue: Peer[] = [...peers];
     let done: number = 0;
 
@@ -63,7 +72,6 @@ export async function downloadTorrent(
     const workerCount: number = Math.min(options.maxPeers ?? DEFAULT_MAX_PEERS, peers.length);
     await Promise.all(Array.from({ length: workerCount }, () => worker()));
 
-    const total: number = torrent.pieces.length;
     const missing: number = total - done;
     if (missing > 0)
         throw new Error(`download incomplete: ${missing} of ${total} pieces missing`);
