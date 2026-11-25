@@ -24,6 +24,8 @@ export function Avatar({ src, alt, ...props }: AvatarProps) {
     }, [src]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setError(false);
         fetchImage()
             .then((blob) => {
                 if (imageBlob) URL.revokeObjectURL(imageBlob);
@@ -42,7 +44,7 @@ export function Avatar({ src, alt, ...props }: AvatarProps) {
                 outline: "1px solid var(--border-light)",
                 outlineOffset: "-1px",
                 backgroundColor: "var(--surface-light-tertiary)",
-                animation: imageBlob ? undefined : "pulse 2s infinite",
+                animation: imageBlob || error ? undefined : "pulse 2s infinite",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
