@@ -14,6 +14,7 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@getpapillon/papicons": "^0.2.3",
     "@iconify-icons/majesticons": "^2.0.0",
     "@iconify/json": "^2.2.526",
     "@prisma/adapter-pg": "7.10.0",

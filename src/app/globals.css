@@ -156,6 +156,18 @@ a, a:visited, a:hover, a:active {
   }
 }
 
+@keyframes pulse {
+  0% {
+    background-color: rgb(from var(--color-white) r g b / 10%);
+  }
+  50% {
+    background-color: rgb(from var(--color-white) r g b / 15%);
+  }
+  100% {
+    background-color: rgb(from var(--color-white) r g b / 10%);
+  }
+}
+
 @keyframes shimmer {
   0% {
     background-position: -800px 0;
