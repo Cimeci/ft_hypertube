@@ -25,7 +25,10 @@ export function Avatar({ src, alt, ...props }: AvatarProps) {
 
     useEffect(() => {
         fetchImage()
-            .then(setImageBlob)
+            .then((blob) => {
+                if (imageBlob) URL.revokeObjectURL(imageBlob);
+                setImageBlob(blob);
+            })
             .catch(() => setError(true));
     }, [fetchImage, src]);
 
@@ -50,6 +53,7 @@ export function Avatar({ src, alt, ...props }: AvatarProps) {
             disabled={!error}
             onClick={() => {
                 setError(false);
+                if (imageBlob) URL.revokeObjectURL(imageBlob);
                 setImageBlob(null);
                 fetchImage()
                     .then(setImageBlob)
@@ -70,6 +74,7 @@ export function Avatar({ src, alt, ...props }: AvatarProps) {
                         }}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
                     />
                 )}
                 {error && (
