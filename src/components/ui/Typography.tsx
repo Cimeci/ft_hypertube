@@ -1,4 +1,4 @@
-import {Children, ComponentPropsWithRef, CSSProperties} from "react";
+import {Children, ComponentPropsWithRef, CSSProperties, ReactNode} from "react";
 import {Color, ColorToCSS} from "@/components/ui/utils";
 import {AnimatePresence, motion} from "motion/react";
 import {TargetAndTransition} from "motion";
@@ -17,7 +17,7 @@ export interface TypographyProps extends ComponentPropsWithRef<"p"> {
     bold?: number | boolean;
     fontSize?: number;
     color?: Color;
-    children?: string;
+    children?: ReactNode;
     uppercase?: boolean;
     animated?: boolean;
     lineLimit?: number;
