@@ -57,7 +57,7 @@
   --typography-title: 700 40px var( --font-body);
   --typography-body: 500 1rem var(--font-body);
 
-  font-size: 16px;
+  font-size: 15px;
 }
 
 @keyframes loadingBar {
@@ -171,7 +171,7 @@ a, a:visited, a:hover, a:active {
 .skeleton-text::before {
   content: '';
   position: absolute;
-  inset: 10% 0;
+  inset: 15% 0;
   background: linear-gradient(90deg, #FFFFFF20 25%, #FFFFFF40 50%, #FFFFFF20 75%);
   background-size: 800px 80%;
   animation: shimmer 5s linear infinite;
@@ -180,9 +180,9 @@ a, a:visited, a:hover, a:active {
 
 @keyframes shimmer {
   0% {
-    background-position: -800px 15%;
+    background-position: -800px 0;
   }
   100% {
-    background-position: 800px 15%;
+    background-position: 800px 0;
   }
 }
