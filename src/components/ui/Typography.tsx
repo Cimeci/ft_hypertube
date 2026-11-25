@@ -1,6 +1,6 @@
-import {ComponentPropsWithRef, CSSProperties} from "react";
+import {Children, ComponentPropsWithRef, CSSProperties} from "react";
 import {Color, ColorToCSS} from "@/components/ui/utils";
-import {motion} from "motion/react";
+import {AnimatePresence, motion} from "motion/react";
 import {TargetAndTransition} from "motion";
 import TransitionLink from "@/components/ui/TransitionLink";
 
@@ -79,55 +79,52 @@ export function Typography(props: TypographyProps) {
         computedStyle.lineClamp = props.lineLimit;
     }
 
-    if (props.skeleton) {
-        let fontSize = computedStyle.fontSize?.toString() ?? "1rem"
-        const size = parseFloat(fontSize);
-        const spaceWidth = fontSize.endsWith("em") ? size * 3 : size * 0.2;
-        return <div style={{
-            display: "flex",
-            gap: spaceWidth,
-            flexWrap: "wrap",
-            height: "100%",
-            color: "transparent",
-            userSelect: "none",
-        }}>
-            {props.children?.split(" ").map((text, index) => (
-                <div
-                    key={index}
+    const {component, ...style} = computedStyle;
+    const Component = motion[component];
+
+    const typography = (
+        <AnimatePresence mode={"popLayout"} initial={false}>
+            {props.skeleton ? (
+                <Component
+                    key={"skeleton"}
                     style={{
-                        ...computedStyle,
+                        ...style,
                         ...props.style,
-                        height: "100%",
-                        minWidth: 20,
-                        borderRadius: spaceWidth,
-                        background: "linear-gradient(90deg, #FFFFFF20 25%, #FFFFFF40 50%, #FFFFFF20 75%)",
-                        backgroundSize: "800px 100%",
-                        animation: "shimmer 5s linear infinite",
-                        animationDelay: `${(index % 5) * 0.4}s`,
+                        color: "transparent",
+                        userSelect: "none",
+                        WebkitUserSelect: "none",
                     }}
+                    initial={{opacity: 0}}
+                    animate={{opacity: 1}}
+                    exit={{opacity: 0}}
                 >
-                    {text}
-                </div>
-            ))}
-        </div>
-    }
+                    {Children.map(props.children, (child, index) => (
+                        <motion.span
+                            style={{position: "relative"}}
+                            key={index}
+                            className="skeleton-text"
+                        >
+                            {child}
+                        </motion.span>
+                    ))}
+                </Component>
+            ) : (
+                <Component
+                    key={"text"}
+                    style={{...style, ...props.style}}
+                    initial={props.initial ?? {opacity: 0}}
+                    animate={props.animate ?? {opacity: 1 }}
+                    exit={props.exit ?? {opacity: 0}}
 
-    const { component, ...style } = computedStyle;
-    const Component = props.animated ? motion[component] : component;
-    const motionProps = props.animated ? {
-        initial: props.initial,
-        animate: props.animate,
-        exit: props.exit,
-    } : {}
-
-    const typography = <Component
-        style={{...style, ...props.style}}
-        {...motionProps}
-    >
-        {props.children}
-    </Component>
+                >
+                    {props.children}
+                </Component>
+            )}
+        </AnimatePresence>
+    )
 
     return props.href ? (
-        <TransitionLink href={props.href} key={props.key} style={{ color: style.color, textDecoration: "none" }}>{typography}</TransitionLink>
+        <TransitionLink href={props.href} key={props.key}
+                        style={{color: style.color, textDecoration: "none"}}>{typography}</TransitionLink>
     ) : typography
 }

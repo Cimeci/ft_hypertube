@@ -168,11 +168,21 @@ a, a:visited, a:hover, a:active {
   }
 }
 
+.skeleton-text::before {
+  content: '';
+  position: absolute;
+  inset: 10% 0;
+  background: linear-gradient(90deg, #FFFFFF20 25%, #FFFFFF40 50%, #FFFFFF20 75%);
+  background-size: 800px 80%;
+  animation: shimmer 5s linear infinite;
+  border-radius: 10px;
+}
+
 @keyframes shimmer {
   0% {
-    background-position: -800px 0;
+    background-position: -800px 15%;
   }
   100% {
-    background-position: 800px 0;
+    background-position: 800px 15%;
   }
 }
