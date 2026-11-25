@@ -10,6 +10,8 @@ export type TypographyVariant =
     | "caption"
     | "body"
     | "footer"
+    | "accountsItemTitle"
+    | "accountsItemUsername"
 
 export interface TypographyProps extends ComponentPropsWithRef<"p"> {
     href?: string;
@@ -56,6 +58,16 @@ const TypographyVariants: Record<TypographyVariant, TypographyStyleProps> = {
     footer: {
         component: "span",
         fontSize: "0.8rem",
+        fontWeight: 400,
+    },
+    accountsItemTitle: {
+        component: "p",
+        fontSize: "1.2rem",
+        fontWeight: 600,
+    },
+    accountsItemUsername: {
+        component: "span",
+        fontSize: "1rem",
         fontWeight: 400,
     },
 }
@@ -115,7 +127,6 @@ export function Typography(props: TypographyProps) {
                     initial={props.initial ?? {opacity: 0}}
                     animate={props.animate ?? {opacity: 1 }}
                     exit={props.exit ?? {opacity: 0}}
-
                 >
                     {props.children}
                 </Component>
