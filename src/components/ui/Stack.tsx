@@ -20,7 +20,8 @@ type StackComponent =
     | "aside"
     | "header"
     | "footer"
-    | "form";
+    | "form"
+    | "nav";
 
 export interface StackProperties {
     component?: StackComponent
