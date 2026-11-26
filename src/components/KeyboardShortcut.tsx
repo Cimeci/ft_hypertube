@@ -1,5 +1,5 @@
 "use client";
-import {useEffect, useSyncExternalStore} from "react";
+import {CSSProperties, ReactNode, useEffect, useSyncExternalStore} from "react";
 
 export type KeyboardKey = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" | "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "Enter" | "Backspace" | "Tab" | "Shift"  | "Meta" | "Escape" | "ArrowUp" | "ArrowDown" | "ArrowLeft" | "ArrowRight" | "Space" | "PageUp" | "PageDown" | "Home" | "End" | "Insert" | "Delete" | "F1" | "F2" | "F3" | "F4" | "F5" | "F6" | "F7" | "F8" | "F9" | "F10" | "F11" | "F12";
 
@@ -8,7 +8,8 @@ export interface KeyboardShortcutProps {
     ctrl?: boolean;
     alt?: boolean;
     onShortcut?: () => void;
-    children?: React.ReactNode;
+    children?: ReactNode;
+    style?: CSSProperties;
 }
 
 const emptySubscribe = () => () => {};
@@ -21,7 +22,7 @@ function getServerIsMac() {
     return false;
 }
 
-export function KeyboardShortcut({ keyboardKey, ctrl, alt, onShortcut, children }: KeyboardShortcutProps) {
+export function KeyboardShortcut({ keyboardKey, ctrl, alt, onShortcut, children, style }: KeyboardShortcutProps) {
     const isMac = useSyncExternalStore(
         emptySubscribe,
         getIsMac,
@@ -72,6 +73,7 @@ export function KeyboardShortcut({ keyboardKey, ctrl, alt, onShortcut, children 
                 color: "var(--text-light-secondary)",
                 userSelect: "none",
                 WebkitUserSelect: "none",
+                ...(style ?? {})
             }}
         >
             {keysList.join(" + ")}
