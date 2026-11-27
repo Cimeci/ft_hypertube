@@ -55,17 +55,19 @@ export function Sidebar({
                     transition={transition}
                 />
                 <Stack gap={5}>
-                    <SidebarItem isWrap={isWrap} icon={Placeholder} title="Popular" href="#" transition={transition} />
-                    <SidebarItem isWrap={isWrap} icon={Placeholder} title="Explore" href="#" transition={transition} />
-                    <SidebarItem isWrap={isWrap} icon={User} title="Following" href="#" transition={transition} />
+                    <SidebarItem isWrap={isWrap} icon={Placeholder} title="Popular" href="/popular" transition={transition} />
+                    <SidebarItem isWrap={isWrap} icon={Placeholder} title="Explore" href="/explore" transition={transition} />
+                    <SidebarItem isWrap={isWrap} icon={User} title="Following" href="/following" transition={transition} />
                     <SidebarItem isWrap={isWrap} icon={Placeholder} title="Activity" href="#" transition={transition} />
-                    <SidebarItem isWrap={isWrap} avatar={<Avatar src={user?.image ?? null} alt={user?.name ?? null} />} title="You" href="#" transition={transition} />
+                    <SidebarItem isWrap={isWrap} avatar={<Avatar src={user?.image ?? null} alt={user?.name ?? null} />} title="You" href={`/profile/${user?.id}`} transition={transition} />
                     <SidebarItem isWrap={isWrap} icon={Dots} title="More" href="#" transition={transition} />
                 </Stack>
             </motion.nav>
             <motion.main
                 style={{
-                    background: "green",
+                    minHeight: "100dvh",
+                    display: "flex",
+                    flexDirection: "column",
                     marginLeft: 400,
                 }}
                 animate={{

@@ -45,7 +45,7 @@ const TypographyVariants: Record<TypographyVariant, TypographyStyleProps> = {
     },
     title2: {
         component: "h2",
-        fontSize: "1.3rem",
+        fontSize: "1.8rem",
         fontWeight: 500,
     },
     caption: {
