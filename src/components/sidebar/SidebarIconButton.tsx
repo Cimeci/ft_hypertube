@@ -22,7 +22,9 @@ export function SidebarIconButton({isWrap, onClick, transition, children}: Sideb
                 alignItems: "center",
                 background: "transparent",
                 border: "none",
-                color: ColorToCSS("textLightSecondary")
+                color: ColorToCSS("textLightSecondary"),
+                borderRadius: 10,
+                outlineOffset: 0,
             }}
             animate={{
                 width: isWrap ? 40 : 50
@@ -32,6 +34,7 @@ export function SidebarIconButton({isWrap, onClick, transition, children}: Sideb
             }}
             onClick={onClick}
             transition={transition}
+            className={"outline"}
         >
             {children}
         </motion.button>
