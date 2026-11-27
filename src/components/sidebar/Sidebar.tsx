@@ -3,7 +3,12 @@ import {ReactNode, useState} from "react";
 import { motion } from "motion/react";
 import {Transition} from "motion";
 import {SidebarHeader} from "@/components/sidebar/SidebarHeader";
-import {Typography} from "@/components/ui/Typography";
+import Stack from "@/components/ui/Stack";
+import {SidebarItem} from "@/components/sidebar/SidebarItem";
+import {Dots, Placeholder, User} from "@getpapillon/papicons";
+import {KeyboardShortcut} from "@/components/KeyboardShortcut";
+import useUser from "@/components/UserProvider";
+import {Avatar} from "@/components/Avatar";
 
 export interface SidebarProps {
     children: ReactNode;
@@ -12,6 +17,8 @@ export interface SidebarProps {
 export function Sidebar({
     children
                         }: SidebarProps) {
+    const { user } = useUser();
+
     const [isWrap, setIsWrap] = useState(false);
 
     const toggleWrap = () => {
@@ -25,7 +32,7 @@ export function Sidebar({
     }
 
     return (
-        <>
+        <KeyboardShortcut ctrl keyboardKey={"b"} onShortcut={toggleWrap}>
             <motion.nav
                 style={{
                     position: "fixed",
@@ -47,7 +54,14 @@ export function Sidebar({
                     toggleWrap={toggleWrap}
                     transition={transition}
                 />
-                <Typography>Test</Typography>
+                <Stack gap={5}>
+                    <SidebarItem isWrap={isWrap} icon={Placeholder} title="Popular" href="#" transition={transition} />
+                    <SidebarItem isWrap={isWrap} icon={Placeholder} title="Explore" href="#" transition={transition} />
+                    <SidebarItem isWrap={isWrap} icon={User} title="Following" href="#" transition={transition} />
+                    <SidebarItem isWrap={isWrap} icon={Placeholder} title="Activity" href="#" transition={transition} />
+                    <SidebarItem isWrap={isWrap} avatar={<Avatar src={user?.image ?? null} alt={user?.name ?? null} />} title="You" href="#" transition={transition} />
+                    <SidebarItem isWrap={isWrap} icon={Dots} title="More" href="#" transition={transition} />
+                </Stack>
             </motion.nav>
             <motion.main
                 style={{
@@ -61,6 +75,6 @@ export function Sidebar({
             >
                 {children}
             </motion.main>
-        </>
+        </KeyboardShortcut>
     )
 }

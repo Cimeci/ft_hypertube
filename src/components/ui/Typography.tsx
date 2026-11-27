@@ -1,7 +1,8 @@
+"use client";
 import {Children, ComponentPropsWithRef, CSSProperties, ReactNode} from "react";
 import {Color, ColorToCSS} from "@/components/ui/utils";
 import {AnimatePresence, motion} from "motion/react";
-import {TargetAndTransition} from "motion";
+import {TargetAndTransition, Transition} from "motion";
 import TransitionLink from "@/components/ui/TransitionLink";
 
 export type TypographyVariant =
@@ -12,6 +13,7 @@ export type TypographyVariant =
     | "footer"
     | "accountsItemTitle"
     | "accountsItemUsername"
+    | "sidebarItemText"
 
 export interface TypographyProps extends ComponentPropsWithRef<"p"> {
     href?: string;
@@ -27,6 +29,7 @@ export interface TypographyProps extends ComponentPropsWithRef<"p"> {
     initial?: TargetAndTransition,
     animate?: TargetAndTransition,
     exit?: TargetAndTransition,
+    transition?: Transition,
     skeleton?: boolean;
 }
 
@@ -70,6 +73,11 @@ const TypographyVariants: Record<TypographyVariant, TypographyStyleProps> = {
         fontSize: "1rem",
         fontWeight: 400,
     },
+    sidebarItemText: {
+        component: "span",
+        fontSize: "1.1rem",
+        fontWeight: 400,
+    }
 }
 
 export function Typography(props: TypographyProps) {
@@ -127,6 +135,7 @@ export function Typography(props: TypographyProps) {
                     initial={props.initial ?? {opacity: 0}}
                     animate={props.animate ?? {opacity: 1 }}
                     exit={props.exit ?? {opacity: 0}}
+                    transition={props.transition}
                 >
                     {props.children}
                 </Component>
